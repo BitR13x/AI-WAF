@@ -1,0 +1,7 @@
+1) logging
+
+2) optimization, Graphs (dataset, internet flow)
+
+3) implementation of unit tests??
+
+4) Review the project requirements and documentation
