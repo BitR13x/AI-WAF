@@ -60,7 +60,13 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
                     self.log_incident(error_details)
                     return
 
-            resp = requests.get(url, headers=merge_two_dicts(req_header, set_header()), verify=False)
+            try:
+                resp = requests.get(url, headers=merge_two_dicts(req_header, set_header()), verify=False)
+            except requests.exceptions.ConnectionError:
+                logging.warning(f"Server not running: {url}")
+                self.send_error(404, "Server not running")
+                return
+
             msg = resp.text
             if sig_waf.verify_response(resp.text):
                 # headers (be careful with end_headers())
@@ -87,7 +93,6 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
                 if header.lower() == "content-length":
                     content_len = int(self.headers[header])
 
-            #!Problem:
             post_body = self.rfile.read(content_len)
             req_header = self.headers
             logging.info(f"Proxying request 'POST' {url}")
@@ -138,8 +143,12 @@ class ProxyHTTPRequestHandler(BaseHTTPRequestHandler):
                 self.log_incident(error_details)
                 return
 
-
-            resp = requests.post(url, data=post_body, headers=merge_two_dicts(req_header, set_header()), verify=False)
+            try:
+                resp = requests.post(url, data=post_body, headers=merge_two_dicts(req_header, set_header()), verify=False)
+            except requests.exceptions.ConnectionError:
+                logging.warning(f"Server not running: {url}")
+                self.send_error(404, "Server not running")
+                return
 
             if sig_waf.verify_response(resp.text):
                 self.send_response(resp.status_code)
