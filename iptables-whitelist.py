@@ -1,6 +1,7 @@
-import torch
 from netfilterqueue import NetfilterQueue
 from scapy.all import IP, TCP, UDP, Raw
+from utils import relative_path
+
 
 # win - alternative netsh
 def extract_features(scapy_packet: IP, packet) -> dict:
@@ -29,7 +30,7 @@ def extract_features(scapy_packet: IP, packet) -> dict:
 def process_packet(packet):
     scapy_packet = IP(packet.get_payload())
     features = extract_features(scapy_packet, packet)
-    with open("./whitelist.txt") as file:
+    with open(relative_path("rules/whitelist.txt")) as file:
         for line in file:
             if line[0] == "" or line[0] == "\n":
                 continue
@@ -37,7 +38,7 @@ def process_packet(packet):
             if features["src_ip"] == line.strip().replace("\n", ""):
                 print(f"❌ Dropping Packet: {scapy_packet.summary()}")
                 packet.drop()
-        
+
     packet.accept()
 
 
