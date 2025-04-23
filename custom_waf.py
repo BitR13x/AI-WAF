@@ -2,7 +2,7 @@ import re
 from transformers import DistilBertTokenizer, DistilBertForSequenceClassification
 from transformers import logging as hf_logging
 import torch
-import numpy as np
+import logging
 from utils import relative_path
 import os
 
@@ -57,8 +57,8 @@ class AIBased:
 
             predicted_class_name = self.data_labels[predicted_class_index]
 
-            print(f"The predicted class for the text is: {predicted_class_name}")
-            print(f"Probabilities for each class: {probabilities.numpy()}")
+            logging.info(f"The predicted class for the text is: {predicted_class_name}")
+            logging.info(f"Probabilities for each class: {probabilities.numpy()}")
 
             if max(probabilities[0]) < self.probability_catch:
                 return True
@@ -82,7 +82,7 @@ class AIBased:
         predicted_class_index = torch.argmax(probabilities, dim=-1).item()
 
         predicted_class_name = self.url_labels[predicted_class_index]
-        print(f"Probabilities for each class: {probabilities.numpy()}: {predicted_class_name}")
+        logging.info(f"Probabilities for each class: {probabilities.numpy()}: {predicted_class_name}")
 
         if max(probabilities[0]) < self.probability_catch:
             # We are not that certain
@@ -123,7 +123,6 @@ class SignatureBased:
                     line = line[:-1]
 
                 if re.search(re.escape(line), string):
-                    print("Match:", line, string, file_path)
                     return True # packet dangerous
 
         return False
@@ -159,7 +158,6 @@ class SignatureBased:
         return self.__verify_signature(response_text, "errors")
 
     def verify_data(self, post_body: str) -> bool:
-        print(post_body)
         # functions in payload
         return self.__verify_signature(post_body, "body")
 
