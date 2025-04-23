@@ -52,8 +52,7 @@ def get_dataset(path, test_size=0.25, random_state=42):
     Y = []
     for label in os.listdir(path):
         target_names.append(label)
-        #with open(os.path.join(path, label, 'ALL_FILES.txt'), encoding="utf8") as f:
-        with open(os.path.join(path, label), encoding="utf8") as f:
+        with open(os.path.join(path, label, 'ALL_FILES.txt'), encoding="utf8") as f:
             lines = f.readlines()
             dataset_size[label] = len(lines)
             for payload in lines:
@@ -69,7 +68,6 @@ def get_dataset(path, test_size=0.25, random_state=42):
     Y = []
 
     for label in names:
-        #with open(os.path.join(path, label, 'ALL_FILES.txt'), encoding="utf8") as f:
         with open(os.path.join(path, label+".txt"), encoding="utf8") as f:
             lines = f.readlines()
             dataset_size[label] = len(lines)

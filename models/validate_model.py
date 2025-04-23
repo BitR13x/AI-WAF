@@ -80,10 +80,7 @@ test_dataset = TextDataset(test_encodings, test_labels)
 
 # Load the pre-trained model for sequence classification
 model = DistilBertForSequenceClassification.from_pretrained(MODEL_NAME, num_labels=len(target_names)).to(dml)
-model.load_state_dict(
-    torch.load(relative_path("../results/model-fwaf-dataset.pth"),
-    weights_only=True)
-)
+model.load_state_dict(torch.load(save_model_dir, weights_only=True))
 model.eval()
 
 #print("saving from hugging")
